@@ -1,4 +1,5 @@
 import tkinter as tk
+import subprocess
 
 back_button = None
 games_frame = None
@@ -107,6 +108,12 @@ def close_after_loading(loading_window):
     teams_button.pack(pady=5, side="top", anchor="center")
     templates_button.pack(pady=5, side="right", anchor="center")
 
+def start_tetris_game():
+    try:
+        subprocess.run(["python3", "путь к тетрису)"]) #ТУТ СКАЧАЙ ФАЙЛ С ТЕТРИСОМ, И ЗАМЕНИ ПУСТЬ НА СВОЙ
+    except Exception as e:
+        print(f"Ошибка при хуй qwerty.py: {e}")
+
 def close_and_show_games():
     global back_button, games_frame
 
@@ -117,7 +124,7 @@ def close_and_show_games():
     # Создаем фрейм для игр
     games_frame = tk.Frame(window, bg="black")
     
-    tetris_button = tk.Button(games_frame, text="Тетрис", command=do_nothing, bg="black", fg="white", relief="solid", width=10)
+    tetris_button = tk.Button(games_frame, text="Тетрис", command=start_tetris_game, bg="black", fg="white", relief="solid", width=10)
     snake_button = tk.Button(games_frame, text="Змейка", command=do_nothing, bg="black", fg="white", relief="solid", width=10)
     minesweeper_button = tk.Button(games_frame, text="Сапёр", command=do_nothing, bg="black", fg="white", relief="solid", width=10)
 
@@ -149,7 +156,6 @@ def show_menu():
     games_button.pack(pady=5, side="left", anchor="center")
     teams_button.pack(pady=5, side="top", anchor="center")
     templates_button.pack(pady=5, side="right", anchor="center")
-
 
 def do_nothing():
     pass
