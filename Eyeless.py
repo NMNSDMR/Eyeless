@@ -110,10 +110,22 @@ def close_after_loading(loading_window):
 
 def start_tetris_game():
     try:
-        subprocess.run(["python3", "путь к тетрису)"]) #ТУТ СКАЧАЙ ФАЙЛ С ТЕТРИСОМ, И ЗАМЕНИ ПУСТЬ НА СВОЙ
+        subprocess.run(["python3", r"путь к тетрису"])
     except Exception as e:
-        print(f"Ошибка при хуй qwerty.py: {e}")
+        print(f"Ошибка при запуске Tetris.py: {e}")
 
+def start_snake_game():
+    try:
+        subprocess.run(["python3", r"путь к блять как его змейке"])
+    except Exception as e:
+        print(f"Ошибка при запуске Snake.py: {e}")
+def start_saper_game():
+    try:
+        subprocess.run(["python3", r"путь к спизженной хуйне сапер короче"])
+    except Exception as e:
+        print(f"Ошибка при запуске saper.py: {e}")
+
+# Добавьте кнопку "Сапёр" и свяжите ее с функцией start_saper_gam
 def close_and_show_games():
     global back_button, games_frame
 
@@ -125,14 +137,14 @@ def close_and_show_games():
     games_frame = tk.Frame(window, bg="black")
     
     tetris_button = tk.Button(games_frame, text="Тетрис", command=start_tetris_game, bg="black", fg="white", relief="solid", width=10)
-    snake_button = tk.Button(games_frame, text="Змейка", command=do_nothing, bg="black", fg="white", relief="solid", width=10)
-    minesweeper_button = tk.Button(games_frame, text="Сапёр", command=do_nothing, bg="black", fg="white", relief="solid", width=10)
+    snake_button = tk.Button(games_frame, text="Змейка", command=start_snake_game, bg="black", fg="white", relief="solid", width=10)
+    saper_button = tk.Button(games_frame, text="Сапёр", command=start_saper_game, bg="black", fg="white", relief="solid", width=10)
 
     # Пакуем кнопки в фрейм и выводим фрейм
     games_frame.pack(pady=20, side="top", anchor="center")
     tetris_button.pack(side="left")
     snake_button.pack(side="left")
-    minesweeper_button.pack(side="left")
+    saper_button.pack(side="left")
 
     # Создаем кнопку "Назад" и выводим ее
     back_button = tk.Button(window, text="Назад", command=close_and_show_menu, bg="black", fg="white", relief="solid", width=10)
