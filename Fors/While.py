@@ -54,11 +54,11 @@ def simplelogic():
 
 def printtime():
     if(M==0 and H==0):     
-         return S
+      return S
     elif(M!=0 and H==0):
       return M,S
     else:
-       return H,M,S
+      return H,M,S
 
 label = tk.Label(window, text=printtime)
 
