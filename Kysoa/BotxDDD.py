@@ -39,7 +39,7 @@ def handle_menu(message):
     with open('/images/menu.jpg', 'rb') as menu_image:
         bot.send_photo(chat_id, menu_image)
     
-    bot.send_message(chat_id, "Для нового расчета воспользуйтесь командой /start")
+    bot.send_message(chat_id, "Для нового расчета используйте команду /start")
 
 @bot.message_handler(commands=['start'])
 def handle_start(message):
@@ -255,13 +255,21 @@ def calculate_daily_calories(message):
                 missing_calories = -calorie_difference
                 recommended_foods = recommend_foods(missing_calories)
                 bot.send_message(chat_id, f"Вам не хватает {int(missing_calories)} ккал для нормы. Рекомендуем следующие продукты:")
-                for food, calories in recommended_foods.items():
+
+                # Создаем список продуктов, сортируя их по убыванию калорий
+                sorted_foods = sorted(recommended_foods.items(), key=lambda x: x[1], reverse=True)
+
+                for food, calories in sorted_foods:
+                    if missing_calories <= 0:
+                        break
                     bot.send_message(chat_id, f"{food}: {calories} ккал")
+                    missing_calories -= calories
 
             bot.send_message(chat_id, "Для нового рассчета воспользуйтесь командой /start")
         else:
             bot.send_message(chat_id, "Выберите день недели с помощью клавиатуры.")
             bot.register_next_step_handler(message, calculate_daily_calories)
+
 
 
 def recommend_foods(excess_calories):
