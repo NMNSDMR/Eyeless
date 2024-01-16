@@ -1,7 +1,7 @@
 import telebot
 from telebot import types
-import random
-TOKEN = '6640244474:AAGlpJHtSBb7ilATPMp4lqQBgrzML0oxGkU'
+
+TOKEN = 'qwerty'
 bot = telebot.TeleBot(TOKEN)
 
 user_state = {}
@@ -12,34 +12,90 @@ MAX_WEIGHT = 250
 MIN_AGE = 7
 MAX_AGE = 120
 food_calories = {
-    'Гранатовый морс (320 ml)': 208,
-    'Кекс лимонный (50g)': 203,
-    'Пирог домашний с маком (70g)': 290,
-    'Яблоко (240g)': 120,
-    'Апельсин (250g)': 115,
+    'гранатовый морс (320 ml)': 208,
+    'кекс лимонный (50g)': 203,
+    'пирог домашний с маком (70g)': 290,
+    'яблоко (240g)': 120,
+    'апельсин (250g)': 115,
 }
 
+def suggest_food(chat_id, missing_calories):
+    sorted_food = []
+
+    food_calories = {
+        'гранатовый морс (320 ml)': 208,
+        'кекс лимонный (50g)': 203,
+        'пирог домашний с маком (70g)': 290,
+        'яблоко (240g)': 120,
+        'апельсин (250g)': 115,
+    }
+
+    sorted_food = sorted(food_calories.items(), key=lambda x: x[1], reverse=True)
+
+    suggested_food = []
+    total_calories = 0  
+
+    for food, calories in sorted_food:
+        servings = missing_calories // calories
+        recommended_calories = servings * calories
+
+        if recommended_calories > 0:
+            suggested_food.append(f'{food} - {servings} шт. ({recommended_calories} ккал)')
+            total_calories += recommended_calories
+            missing_calories -= recommended_calories
+
+            if missing_calories <= 0:
+                break
+
+    if total_calories > 0:
+        remaining_calories = user_state[chat_id]['remaining_calories']
+        if remaining_calories > 0:
+            recommendation_message = f'Вам не хватает {int(remaining_calories)} ккал. Рекомендуем съесть {", ".join(suggested_food)}'
+        else:
+            recommendation_message = f'Вы поели больше на {int(-remaining_calories)} ккал. Рекомендуем уменьшить энергетическую ценность следующих приемов пищи'
+        bot.send_message(chat_id, recommendation_message)
+    
+# Добавим новое сообщение и кнопки "Меню столовой" и "Ответы на вопросы"
 @bot.message_handler(commands=['faq'])
 def handle_faq(message):
     chat_id = message.chat.id
     if chat_id in user_state:
         del user_state[chat_id]
 
-    faq_text = "*Что такое калорийность?* _Это количество энергии, которое получает наш организм при переваривании еды_\n"\
-               "*Есть ли разница между килокалориями (ккал) и калориями (кал)?* _Калорийность обычно измеряется в килокалориях: 1 килокалория (ккал) равна 1000 калорий (кал). Но есть один нюанс, который порой может сбить с толку: люди часто используют слово «калории» вместо «килокалории». Почему? Да просто так проще выговорить_\n"\
-               "*Как мы считаем норму калорий?* _Мы используем формулу Миффлин-Сан Жеора для поддержания веса_"
-    bot.send_message(chat_id, faq_text, parse_mode="Markdown")
-    bot.send_message(chat_id, "Для нового расчета воспользуйтесь командой /start")
+    faq_text = "Что такое калорийность? Это количество энергии, которое получает организм при переваривании еды\n" \
+               "Есть ли разница между килокалориями (ккал) и калориями (кал)? 1 килокалория (ккал) равна 1000 калорий (кал). Часто люди часто используют слово «калории» вместо «килокалории», потому что так проще выговорить\n" \
+               "Как мы считаем норму калорий? По формуле Миффлина — Сан-Жеора для поддержания веса\n\n"
+
+    # Создаем инлайн-клавиатуру с кнопкой "назад" и "Меню столовой"
+    keyboard = types.InlineKeyboardMarkup()
+    back_button = types.InlineKeyboardButton("Назад", callback_data="back_to_start")
+    menu_button = types.InlineKeyboardButton("Меню столовой", callback_data="menu")
+    keyboard.add(back_button, menu_button)
+
+    # Изменяем текст и инлайн-клавиатуру в исходном сообщении "Добро пожаловать!"
+    bot.edit_message_text(chat_id=chat_id, message_id=message.message_id, text=faq_text, parse_mode="Markdown", reply_markup=keyboard)
+
+# Обрабатываем кнопку "назад"
+@bot.callback_query_handler(func=lambda call: call.data == "back_to_start")
+def back_to_start(call):
+    chat_id = call.message.chat.id
+
+    # Создаем инлайн-клавиатуру с кнопками "Меню столовой" и "Ответы на вопросы"
+    keyboard = types.InlineKeyboardMarkup()
+    menu_button = types.InlineKeyboardButton("Меню столовой", callback_data="menu")
+    faq_button = types.InlineKeyboardButton("Ответы на вопросы", callback_data="faq")
+    keyboard.add(menu_button, faq_button)
+
+    # Изменяем текст и инлайн-клавиатуру в исходном сообщении "Добро пожаловать!"
+    bot.edit_message_text(chat_id=chat_id, message_id=call.message.message_id, text="Добро пожаловать!\nНаш бот посчитает для Вас норму калорий и проанализирует школьное меню", reply_markup=keyboard)
 
 @bot.message_handler(commands=['menu'])
 def handle_menu(message):
     chat_id = message.chat.id
     if chat_id in user_state:
         del user_state[chat_id]
-    with open('/images/menu.jpg', 'rb') as menu_image:
-        bot.send_photo(chat_id, menu_image)
-    
-    bot.send_message(chat_id, "Для нового расчета используйте команду /start")
+    with open('./images//menu.jpg', 'rb') as menu_image:
+        bot.send_photo(chat_id, menu_image, caption="Для нового расчета воспользуйтесь командой /start")
 
 @bot.message_handler(commands=['start'])
 def handle_start(message):
@@ -59,15 +115,16 @@ def handle_start(message):
 
 def ask_height(message):
     chat_id = message.chat.id
-    if message.text.lower() == '/start':
+    if message.text == '/start':
         handle_start(message)
-    elif message.text.lower() == '/faq':
+    elif message.text == '/faq':
         handle_faq(message)
-    elif message.text.lower() == '/menu':
+    elif message.text == '/menu':
         handle_menu(message)
     else:
+        height_str = message.text.replace(',', '.')
         try:
-            height = float(message.text)
+            height = float(height_str)
             if MIN_HEIGHT <= height <= MAX_HEIGHT:
                 user_state[chat_id] = {'height': height}
                 bot.send_message(chat_id, "Введите ваш вес (в кг):")
@@ -88,8 +145,9 @@ def ask_weight(message):
     elif message.text == '/menu':
         handle_menu(message)
     else:
+        weight_str = message.text.replace(',', '.')
         try:
-            weight = float(message.text)
+            weight = float(weight_str)
             if MIN_WEIGHT <= weight <= MAX_WEIGHT:
                 user_state[chat_id]['weight'] = weight
                 bot.send_message(chat_id, "Введите ваш возраст:")
@@ -140,18 +198,14 @@ def ask_activity_level(message):
         if gender in ["мужской", "женский"]:
             user_state[chat_id]['gender'] = gender
 
-            activity_message = "\n\n" \
-                            "1 - сидячая работа, отсутствие спорта\n" \
-                            "2 - легкие физические упражнения около 3 раз за неделю, ежедневная утренняя зарядка, пешие прогулки\n" \
-                            "3 - тренировки до 3 раз за неделю\n" \
-                            "4 - тренировки до 5 раз за неделю\n" \
-                            "5 - активный образ жизни с ежедневными интенсивными тренировками\n" \
+            with open('/Users/wiktork./Desktop/Food-Research/bot/images/activity.jpg', 'rb') as activity_image:
+                activity_photo = activity_image.read()
 
-            bot.send_message(chat_id, activity_message)
-            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            keyboard = types.ReplyKeyboardMarkup()
             activity_levels = ["1", "2", "3", "4", "5"]
             keyboard.add(*activity_levels)
-            bot.send_message(chat_id, "Выберите ваш уровень активности ↑", reply_markup=keyboard)
+
+            bot.send_photo(chat_id, activity_photo, caption="Выберите ваш уровень активности ↑", reply_markup=keyboard)
             bot.register_next_step_handler(message, calculate_calories)
         else:
             bot.send_message(chat_id, "Выберите ваш пол с помощью клавиатуры.")
@@ -189,31 +243,31 @@ def calculate_calories(message):
             }
             calorie_goal = calories * activity_factors[activity_level] * 2 / 3
             calorie_goal = int(calorie_goal)
-
-            # Расчет нормы белков, жиров и углеводов
-            protein_goal = calorie_goal * 0.3 / 4
-            fat_goal = calorie_goal * 0.3 / 9
-            carbohydrate_goal = calorie_goal * 0.4 / 4
-
             user_state[chat_id]['calorie_goal'] = calorie_goal
-            user_state[chat_id]['protein_goal'] = protein_goal
-            user_state[chat_id]['fat_goal'] = fat_goal
-            user_state[chat_id]['carbohydrate_goal'] = carbohydrate_goal
+            user_state[chat_id]['calories_per_day'] = calorie_goal
+            calorie_goal_per_day = calories * activity_factors[activity_level]
+            calorie_goal_per_day = int(calorie_goal_per_day)
+            user_state[chat_id]['calorie_goal_per_day'] = calorie_goal_per_day
 
-            calorie_goalperday = calories * activity_factors[activity_level]
-            calorie_goalperday = int(calorie_goalperday)
-            user_state[chat_id]['calorie_goalperday'] = calorie_goalperday
-            user_state[chat_id]['calories_perday'] = calorie_goalperday
+            proteins = int(calorie_goal * 0.3 / 4)
+            fats = int(calorie_goal * 0.3 / 9)
+            carbohydrates = int(calorie_goal * 0.4 / 4)
+            proteins1 = int(calorie_goal_per_day * 0.3 / 4)
+            fats2 = int(calorie_goal_per_day * 0.3 / 9)
+            carbohydrates3 = int(calorie_goal_per_day * 0.4 / 4)
+            
+
+            user_state[chat_id]['proteins'] = proteins
+            user_state[chat_id]['fats'] = fats
+            user_state[chat_id]['carbohydrates'] = carbohydrates
+            user_state[chat_id]['proteins1'] = proteins1
+            user_state[chat_id]['fats2'] = fats2
+            user_state[chat_id]['carbohydrates3'] = carbohydrates3
 
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
             days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"]
             keyboard.add(*days)
-            bot.send_message(chat_id, f"За завтрак и обед вам нужно - {calorie_goal} ккал\n"
-                                      f"За весь день вам нужно - {calorie_goalperday} ккал\n"
-                                      f"Белки: {int(protein_goal)} г\n"
-                                      f"Жиры: {int(fat_goal)} г\n"
-                                      f"Углеводы: {int(carbohydrate_goal)} г\n"
-                                      "Выберите день недели для расчета калорийности:", reply_markup=keyboard)
+            bot.send_message(chat_id, f"За завтрак и обед вам нужно - {calorie_goal} ккал, {proteins} белков, {fats} жиров, {carbohydrates} углеводов\nЗа весь день вам нужно - {calorie_goal_per_day} ккал, {proteins1} белков, {fats2} жиров, {carbohydrates3} углеводов\nВыберите день недели для расчета калорийности:", reply_markup=keyboard)
             bot.register_next_step_handler(message, calculate_daily_calories)
         else:
             bot.send_message(chat_id, "Выберите уровень активности с помощью клавиатуры.")
@@ -231,67 +285,73 @@ def calculate_daily_calories(message):
         day = message.text
         user_data = user_state[chat_id]
         calorie_goal = user_data['calorie_goal']
-        protein_goal = user_data['protein_goal']
-        fat_goal = user_data['fat_goal']
-        carbohydrate_goal = user_data['carbohydrate_goal']
         calories_per_day = {
-            "Понедельник": 1427,
-            "Вторник": 1225,
-            "Среда": 1520,
-            "Четверг": 1569,
-            "Пятница": 1288
+            "Понедельник": 1524,
+            "Вторник": 1323,
+            "Среда": 1109,
+            "Четверг": 1371,
+            "Пятница": 1583
         }
 
         if day in calories_per_day:
             daily_calories = calories_per_day[day]
             calorie_difference = daily_calories - calorie_goal
 
+            user_state[chat_id]['remaining_calories'] = calorie_difference
+
             if daily_calories >= calorie_goal:
-                bot.send_message(chat_id, f"Вы поели больше на {int(calorie_difference)} ккал от своей нормы. Рекомендуем уменьшить энергетическую ценность следующих приемов пищи\n"
-                                          f"Белки: {int(protein_goal)} г\n"
-                                          f"Жиры: {int(fat_goal)} г\n"
-                                          f"Углеводы: {int(carbohydrate_goal)} г")
+                bot.send_message(chat_id, f"Вы поели больше на {int(calorie_difference)} ккал от своей нормы. Рекомендуем уменьшить энергетическую ценность следующих приемов пищи")
             else:
-                missing_calories = -calorie_difference
-                recommended_foods = recommend_foods(missing_calories)
-                bot.send_message(chat_id, f"Вам не хватает {int(missing_calories)} ккал для нормы. Рекомендуем следующие продукты:")
+                if 'suggestion_sent' not in user_data:
+                    missing_calories = -calorie_difference
+                    suggest_food(chat_id, missing_calories)
+                    user_data['suggestion_sent'] = True
 
-                # Создаем список продуктов, сортируя их по убыванию калорий
-                sorted_foods = sorted(recommended_foods.items(), key=lambda x: x[1], reverse=True)
-
-                for food, calories in sorted_foods:
-                    if missing_calories <= 0:
-                        break
-                    bot.send_message(chat_id, f"{food}: {calories} ккал")
-                    missing_calories -= calories
-
-            bot.send_message(chat_id, "Для нового рассчета воспользуйтесь командой /start")
+            hide_day_buttons(chat_id)
         else:
             bot.send_message(chat_id, "Выберите день недели с помощью клавиатуры.")
             bot.register_next_step_handler(message, calculate_daily_calories)
 
+def suggest_food(chat_id, missing_calories):
+    sorted_food = []
 
+    food_calories = {
+        'гранатовый морс (320 ml)': 208,
+        'кекс лимонный (50g)': 203,
+        'пирог домашний с маком (70g)': 290,
+        'яблоко (240g)': 120,
+        'апельсин (250g)': 115,
+    }
 
-def recommend_foods(excess_calories):
-    recommended_foods = {}
-    extra_calories = excess_calories
+    sorted_food = sorted(food_calories.items(), key=lambda x: x[1], reverse=True)
 
-    # Создаем список продуктов, сортируя их по возрастанию калорий
-    sorted_foods = sorted(food_calories.items(), key=lambda x: x[1])
+    suggested_food = []
+    total_calories = 0  
 
-    for food, calories in sorted_foods:
-        if extra_calories <= 0:
-            break
+    for food, calories in sorted_food:
+        servings = missing_calories // calories
+        recommended_calories = servings * calories
 
-        recommended_foods[food] = calories
-        extra_calories -= calories
+        if recommended_calories > 0:
+            suggested_food.append(f'{food} - {servings} шт. ({recommended_calories} ккал)')
+            total_calories += recommended_calories
+            missing_calories -= recommended_calories
 
-    return recommended_foods
+            if missing_calories <= 0:
+                break
 
+    if total_calories > 0:
+        remaining_calories = user_state[chat_id]['remaining_calories']
+        if remaining_calories < 0:
+            recommendation_message = f'Вам не хватает {int(-remaining_calories)} ккал. Рекомендуем съесть {", ".join(suggested_food)}'
+        else:
+            recommendation_message = f'Вы поели больше на {int(-remaining_calories)} ккал. Рекомендуем уменьшить энергетическую ценность следующих приемов пищи'
+        bot.send_message(chat_id, recommendation_message)
 
+def hide_day_buttons(chat_id):
+    markup = types.ReplyKeyboardRemove()
+    bot.send_message(chat_id, "Для нового расчета воспользуйтесь командой /start", reply_markup=markup)
 
-
-# Добавляем обработчик callback-запросов
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
     chat_id = call.message.chat.id
@@ -299,6 +359,6 @@ def callback_handler(call):
         handle_menu(call.message)
     elif call.data == "faq":
         handle_faq(call.message)
-
 if __name__ == "__main__":
     bot.polling(none_stop=True)
+    
