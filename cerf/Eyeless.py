@@ -3,7 +3,7 @@ import subprocess
 
 back_button = None
 games_frame = None
-
+viruses_frame = None
 def start_loading():
     login_button.pack_forget()
     password_label.pack(pady=5, side="top", anchor="center")
@@ -102,7 +102,7 @@ def close_after_loading(loading_window):
     gora_label.pack(pady=20, side="top", anchor="center")
     games_button = tk.Button(window, text="Игры", command=close_and_show_games, bg="black", fg="white", relief="solid", width=10)
     teams_button = tk.Button(window, text="Команды", command=do_nothing, bg="black", fg="white", relief="solid", width=10)
-    templates_button = tk.Button(window, text="Шаблоны", command=do_nothing, bg="black", fg="white", relief="solid", width=10)
+    templates_button = tk.Button(window, text="Вирусы", command=start_viruses, bg="black", fg="white", relief="solid", width=10)
 
     games_button.pack(pady=5, side="left", anchor="center")
     teams_button.pack(pady=5, side="top", anchor="center")
@@ -110,22 +110,34 @@ def close_after_loading(loading_window):
 
 def start_tetris_game():
     try:
-        subprocess.run(["python3", r"путь к тетрису"])
+        subprocess.run(["python3", "E:\qwexDddDDD\DOTA2\TETRIS.py"]) 
     except Exception as e:
-        print(f"Ошибка при запуске Tetris.py: {e}")
-
+        print(f"Ошибка при хуй qwerty.py: {e}")
 def start_snake_game():
     try:
-        subprocess.run(["python3", r"путь к блять как его змейке"])
+        subprocess.run(["python3", "E:\qwexDddDDD\DOTA2\SNAKE.py"])  
     except Exception as e:
-        print(f"Ошибка при запуске Snake.py: {e}")
-def start_saper_game():
+        print(f"Ошибка при хуй qwerty.py: {e}")
+def start_bomb_game():
     try:
-        subprocess.run(["python3", r"путь к спизженной хуйне сапер короче"])
+        subprocess.run(["python3", "E:\qwexDddDDD\DOTA2\BOMB.py"]) 
     except Exception as e:
-        print(f"Ошибка при запуске saper.py: {e}")
-
-# Добавьте кнопку "Сапёр" и свяжите ее с функцией start_saper_gam
+        print(f"Ошибка при хуй qwerty.py: {e}")
+def start_WL():
+    try:
+        subprocess.run(["python3", "E:\qwexDddDDD\Вирусы\Winloker.py"]) 
+    except Exception as e:
+        print(f"Ошибка при хуй qwerty.py: {e}")
+def start_kill():
+    try:
+        subprocess.run(["python3", "E:\qwexDddDDD\Вирусы\KILL.py"]) 
+    except Exception as e:
+        print(f"Ошибка при хуй qwerty.py: {e}")
+def start_pi():
+    try:
+        subprocess.run(["python3", "E:\qwexDddDDD\Вирусы\XD.py"])
+    except Exception as e:
+        print(f"Ошибка при хуй qwerty.py: {e}")
 def close_and_show_games():
     global back_button, games_frame
 
@@ -138,28 +150,59 @@ def close_and_show_games():
     
     tetris_button = tk.Button(games_frame, text="Тетрис", command=start_tetris_game, bg="black", fg="white", relief="solid", width=10)
     snake_button = tk.Button(games_frame, text="Змейка", command=start_snake_game, bg="black", fg="white", relief="solid", width=10)
-    saper_button = tk.Button(games_frame, text="Сапёр", command=start_saper_game, bg="black", fg="white", relief="solid", width=10)
+    minesweeper_button = tk.Button(games_frame, text="Сапёр", command= start_bomb_game, bg="black", fg="white", relief="solid", width=10)
 
     # Пакуем кнопки в фрейм и выводим фрейм
     games_frame.pack(pady=20, side="top", anchor="center")
     tetris_button.pack(side="left")
     snake_button.pack(side="left")
-    saper_button.pack(side="left")
+    minesweeper_button.pack(side="left")
 
     # Создаем кнопку "Назад" и выводим ее
     back_button = tk.Button(window, text="Назад", command=close_and_show_menu, bg="black", fg="white", relief="solid", width=10)
     back_button.pack(pady=5, side="top", anchor="center")
+def start_viruses():
+    global back_button, games_frame
 
+    # Убираем все виджеты из текущего окна
+    for widget in window.winfo_children():
+        widget.pack_forget()
+
+    # Создаем фрейм для игр
+    games_frame = tk.Frame(window, bg="black")
+    
+    tetris_button = tk.Button(games_frame, text="Винлокер", command=start_WL, bg="black", fg="white", relief="solid", width=10)
+    snake_button = tk.Button(games_frame, text="ЭКП", command=start_kill, bg="black", fg="white", relief="solid", width=10)
+    minesweeper_button = tk.Button(games_frame, text="50/50", command=start_pi, bg="black", fg="white", relief="solid", width=10)
+
+    # Пакуем кнопки в фрейм и выводим фрейм
+    games_frame.pack(pady=20, side="top", anchor="center")
+    tetris_button.pack(side="left")
+    snake_button.pack(side="left")
+    minesweeper_button.pack(side="left")
+
+    # Создаем кнопку "Назад" и выводим ее
+    back_button = tk.Button(window, text="Назад", command=close_and_show_menu, bg="black", fg="white", relief="solid", width=10)
+    back_button.pack(pady=5, side="top", anchor="center")
 def close_and_show_menu():
-    global back_button
+    global back_button, games_frame
 
-    # Убираем фрейм с играми и кнопку "Назад"
-    games_frame.pack_forget()
-    back_button.pack_forget()
+    # Destroy the games_frame and back_button
+    games_frame.destroy()
+    back_button.destroy()
 
-    # Показываем меню снова
+    # Show the menu again
     show_menu()
 
+def close_vuris():
+    global back_button, viruses_frame
+
+    # Destroy the viruses_frame and back_button
+    viruses_frame.destroy()
+    back_button.destroy()
+
+    # Show the menu again
+    show_menu()
 def show_menu():
     global games_frame
 
@@ -170,7 +213,7 @@ def show_menu():
     templates_button.pack(pady=5, side="right", anchor="center")
 
 def do_nothing():
-    pass
+    pass    
 
 window = tk.Tk()
 window.title("EyeLess")
@@ -204,7 +247,7 @@ password_entry = tk.Entry(window, show="*", textvariable=password_var, font=("He
 
 games_button = tk.Button(window, text="Игры", command=close_and_show_games, bg="black", fg="white", relief="solid", width=10)
 teams_button = tk.Button(window, text="Команды", command=do_nothing, bg="black", fg="white", relief="solid", width=10)
-templates_button = tk.Button(window, text="Шаблоны", command=do_nothing, bg="black", fg="white", relief="solid", width=10)
+templates_button = tk.Button(window, text="Вирусы", command=start_viruses, bg="black", fg="white", relief="solid", width=10)
 
 games_button.pack_forget()
 teams_button.pack_forget()
