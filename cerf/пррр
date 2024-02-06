@@ -1,8 +1,13 @@
-s = "1" * 46 + "2" * 31
-while "1111" in s or "222" in s:
-    if "1111" in s:
-        s = s.replace("1111", "2", 1)
-    else:
-        s = s.replace("222", "1", 1)
+s = ">" + "1" * 11 + "2" * 12 + "3" * 30
 
-print(s)
+while ">1" in s or ">2" in s or ">3" in s:
+    if ">1" in s:
+        s = s.replace(">1", "22>", 1)
+    if ">2" in s:
+        s = s.replace(">2", "2>", 1)
+    if ">3" in s:
+        s = s.replace(">3", "1>", 1)
+
+# Вычисляем сумму числовых значений цифр в преобразованной строке
+sum_digits = s.count("1") + 2 * s.count("2") + 3 * s.count("3")
+print(sum_digits)
