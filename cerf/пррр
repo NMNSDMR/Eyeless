@@ -7,9 +7,6 @@ def count_divisors(n):
             else:
                 count += 1
     return count
-count_numbers = 0
 for num in range(1000000, 1000101):
     if count_divisors(num) == 6:
-        count_numbers += 1
-
-print( count_numbers)
+        print(num)
