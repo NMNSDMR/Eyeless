@@ -61,7 +61,7 @@ fullscreen()
 
 txt_one = Label(window, text='NATE HIGGERS', font=("Arial Bold", fontsizeHding), fg='red', bg='black')
 txt_two = Label(window, text='УГАДАЙ ПАРОЛЬ', font=("Arial Bold", fontsizeHding), fg='red', bg='black')
-txt_three = Label(window, text='ДАВАЙ БРО ПОПЫТАЙСЯ ЗАКРЫТЬ', font=("Arial Bold", fontsize), fg='white', bg='black')
+txt_three = Label(window, text='ДАВАЙ БРО ', font=("Arial Bold", fontsize), fg='white', bg='black')
 
 txt_one.grid(column=0, row=0)
 txt_two.grid(column=0, row=0)
