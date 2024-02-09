@@ -1,16 +1,93 @@
-def posZero(servo_pin2, servo_pin1, servo_pin5, servo_pin4):
-    n1_current = -70  # Current position of servo 1
-    n2_current = 40   # Current position of servo 2
-    n1_target = -30   # Target position for servo 1
-    n2_target = 40    # Target position for servo 2
-
-    # Gradually move servos back to initial position
-    while n1_current < n1_target or n2_current > n2_target:
-        if n1_current < n1_target:
-            n1_current += 1
-        if n2_current > n2_target:
-            n2_current -= 1
+def posUp(servo_pin2, servo_pin1, servo_pin5, servo_pin4, servo_pin3):
+    n1 = -70
+    n2 = 40
+    direction = 1
+    
+    # Move towards upper cell
+    while True:
+        set_angle_two_servo(n1, servo_pin2, servo_pin1)
+        set_angle_two_servo(n2, servo_pin5, servo_pin4)
         
-        set_angle_two_servo(n1_current, servo_pin2, servo_pin1)
-        set_angle_two_servo(n2_current, servo_pin5, servo_pin4)
+        n1 += 3 * direction
+        n2 -= 1 * direction
         time.sleep(0.05)
+        
+        if (direction == 1 and (n1 >= 45 or n2 <= -15)) or (direction == -1 and (n1 <= -70 or n2 >= 40)):
+            break
+    time.sleep(1)
+    
+    # Grab the cube
+    set_angle(0, servo_pin3)
+    time.sleep(2)
+    
+    # Smoothly return to starting position
+    while True:
+        set_angle_two_servo(n1, servo_pin2, servo_pin1)
+        set_angle_two_servo(n2, servo_pin5, servo_pin4)
+        
+        # Gradually decrease the angles
+        n1 -= 2 * direction
+        n2 += 1 * direction
+        time.sleep(0.05)
+        
+        # Check if reaching the zero position
+        if (direction == 1 and (n1 >= -70 or n2 <= 40)) or (direction == -1 and (n1 <= 45 or n2 >= -70)):
+            break
+    time.sleep(1)
+    
+    # Return to zero position
+    posZero(servo_pin2, servo_pin1, servo_pin5, servo_pin4)
+
+def posMd(servo_pin2, servo_pin1, servo_pin5, servo_pin4, servo_pin3):
+    n1 = -70
+    n2 = 40
+    
+    # Move towards middle cell
+    while n1 != 45 and n2 != -45:
+        set_angle_two_servo(n1, servo_pin2, servo_pin1)
+        set_angle_two_servo(n2, servo_pin5, servo_pin4)
+        n1 += 3
+        n2 -= 2
+        time.sleep(0.05)
+        if n1 >= 45 or n2 <= -45:
+            break
+    time.sleep(1)
+    
+    # Grab the cube
+    set_angle(0, servo_pin3)
+    time.sleep(2)
+    
+    # Smoothly return to starting position
+    set_angle_two_servo(n1 + 100, servo_pin2, servo_pin1)
+    set_angle_two_servo(n2 + 100, servo_pin5, servo_pin4)
+    time.sleep(1)
+    posZero(servo_pin2, servo_pin1, servo_pin5, servo_pin4)
+
+def posBt(servo_pin2, servo_pin1, servo_pin5, servo_pin4, servo_pin3):
+    n1 = -70
+    n2 = 40
+    
+    # Move towards bottom cell
+    while n1 != 45 and n2 != -70:
+        set_angle_two_servo(n2, servo_pin5, servo_pin4)
+        set_angle_two_servo(n1, servo_pin2, servo_pin1)
+        n1 += 3
+        n2 -= 2
+        time.sleep(0.05)
+        if n1 >= 45 or n2 <= -70:
+            break
+    time.sleep(1)
+    
+    # Grab the cube
+    set_angle(0, servo_pin3)
+    time.sleep(2)
+    
+    # Smoothly return to starting position
+    set_angle_two_servo(n1 + 0, servo_pin2, servo_pin1)
+    set_angle_two_servo(n2 + 0, servo_pin5, servo_pin4)
+    time.sleep(1)
+    posZero(servo_pin2, servo_pin1, servo_pin5, servo_pin4)
+
+def posZero(servo_pin2, servo_pin1, servo_pin5, servo_pin4):
+    set_angle_two_servo(-70, servo_pin2, servo_pin1)  # -30
+    set_angle_two_servo(40, servo_pin5, servo_pin4)  # 40
