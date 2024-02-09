@@ -1,4 +1,39 @@
-for num in range(1000000, 1000101):
-    divisors = sum(2 for i in range(1, int(num**0.5) + 1) if num % i == 0)
-    if divisors == 6:
-        print(num)
+def posUp(servo_pin2, servo_pin1, servo_pin5, servo_pin4):
+    n1 = -70
+    n2 = 40
+    while n1 != 45 and n2 != -15:
+        set_angle_two_servo(n1, servo_pin2, servo_pin1)
+        set_angle_two_servo(n2, servo_pin5, servo_pin4)
+        
+        n1 += 3
+        n2 -= 1
+        time.sleep(0.05)
+        
+        if n1 >= 45 or n2 <= -15:  # Добавлено условие для остановки движения при достижении определенного угла
+            break
+
+def posMd(servo_pin2, servo_pin1, servo_pin5, servo_pin4):
+    n1 = -70
+    n2 = 40
+    while n1 != 45 and n2 != -45:
+        set_angle_two_servo(n1, servo_pin2, servo_pin1)
+        set_angle_two_servo(n2, servo_pin5, servo_pin4)
+        n1 += 3
+        n2 -= 2
+        time.sleep(0.05)
+        
+        if n1 >= 45 or n2 <= -45:  # Добавлено условие для остановки движения при достижении определенного угла
+            break
+
+def posBt(servo_pin2, servo_pin1, servo_pin5, servo_pin4):
+    n1 = -70
+    n2 = 40
+    while n1 != 45 and n2 != -70:
+        set_angle_two_servo(n2, servo_pin5, servo_pin4)
+        set_angle_two_servo(n1, servo_pin2, servo_pin1)
+        n1 += 3
+        n2 -= 2
+        time.sleep(0.05)
+        
+        if n1 >= 45 or n2 <= -70:  # Добавлено условие для остановки движения при достижении определенного угла
+            break
