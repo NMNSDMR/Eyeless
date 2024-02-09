@@ -1,20 +1,13 @@
-def posUp(servo_pin2, servo_pin1, servo_pin5, servo_pin4):
+def posUp(servo_pin2, servo_pin1, servo_pin5, servo_pin4, direction=1):
     n1 = -70
     n2 = 40
-    direction1 = 1  # Направление движения для сервопривода servo_pin2
-    direction2 = -1  # Направление движения для сервопривода servo_pin5
-    
     while True:
         set_angle_two_servo(n1, servo_pin2, servo_pin1)
         set_angle_two_servo(n2, servo_pin5, servo_pin4)
         
-        if n1 >= 45 or n2 <= -15:
-            direction1 = -1  # Изменить направление движения
-            direction2 = 1  # Изменить направление движения
-        elif n1 <= -70 or n2 >= 40:
-            direction1 = 1  # Изменить направление движения
-            direction2 = -1  # Изменить направление движения
-            
-        n1 += 3 * direction1
-        n2 -= 1 * direction2
+        n1 += 3 * direction
+        n2 -= 1 * direction
         time.sleep(0.05)
+        
+        if (direction == 1 and (n1 >= 45 or n2 <= -15)) or (direction == -1 and (n1 <= -70 or n2 >= 40)):
+            break
