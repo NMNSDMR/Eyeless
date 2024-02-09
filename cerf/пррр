@@ -8,9 +8,9 @@ def posUp(servo_pin2, servo_pin1, servo_pin5, servo_pin4, servo_pin3):
         set_angle_two_servo(n1, servo_pin2, servo_pin1)
         set_angle_two_servo(n2, servo_pin5, servo_pin4)
         
-        n1 += 3 * direction
-        n2 -= 1 * direction
-        time.sleep(0.05)
+        n1 += direction
+        n2 -= direction
+        time.sleep(0.1)  # Slower movement
         
         if (direction == 1 and (n1 >= 45 or n2 <= -15)) or (direction == -1 and (n1 <= -70 or n2 >= 40)):
             break
@@ -26,9 +26,9 @@ def posUp(servo_pin2, servo_pin1, servo_pin5, servo_pin4, servo_pin3):
         set_angle_two_servo(n2, servo_pin5, servo_pin4)
         
         # Gradually decrease the angles
-        n1 -= 2 * direction
-        n2 += 1 * direction
-        time.sleep(0.05)
+        n1 -= direction
+        n2 += direction
+        time.sleep(0.1)  # Slower movement
         
         # Check if reaching the zero position
         if (direction == 1 and (n1 >= -70 or n2 <= 40)) or (direction == -1 and (n1 <= 45 or n2 >= -70)):
@@ -46,9 +46,9 @@ def posMd(servo_pin2, servo_pin1, servo_pin5, servo_pin4, servo_pin3):
     while n1 != 45 and n2 != -45:
         set_angle_two_servo(n1, servo_pin2, servo_pin1)
         set_angle_two_servo(n2, servo_pin5, servo_pin4)
-        n1 += 3
-        n2 -= 2
-        time.sleep(0.05)
+        n1 += 1
+        n2 -= 1
+        time.sleep(0.1)  # Slower movement
         if n1 >= 45 or n2 <= -45:
             break
     time.sleep(1)
@@ -71,9 +71,9 @@ def posBt(servo_pin2, servo_pin1, servo_pin5, servo_pin4, servo_pin3):
     while n1 != 45 and n2 != -70:
         set_angle_two_servo(n2, servo_pin5, servo_pin4)
         set_angle_two_servo(n1, servo_pin2, servo_pin1)
-        n1 += 3
-        n2 -= 2
-        time.sleep(0.05)
+        n1 += 1
+        n2 -= 1
+        time.sleep(0.1)  # Slower movement
         if n1 >= 45 or n2 <= -70:
             break
     time.sleep(1)
