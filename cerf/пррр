@@ -1,67 +1,16 @@
-import time
-import RPi.GPIO as GPIO
+def posZero(servo_pin2, servo_pin1, servo_pin5, servo_pin4):
+    n1_current = -70  # Current position of servo 1
+    n2_current = 40   # Current position of servo 2
+    n1_target = -30   # Target position for servo 1
+    n2_target = 40    # Target position for servo 2
 
-def set_angle(angle, servo_pin):
-    GPIO.setup(servo_pin, GPIO.OUT)
-    pwm = GPIO.PWM(servo_pin, 50)
-    pwm.start(8)
-    duty = (angle + 90) / 18 + 2
-    pwm.ChangeDutyCycle(duty)
-    time.sleep(0.1)
-    pwm.stop()
-
-def set_angle_two_servo(angle, servo_pin1, servo_pin2):
-    GPIO.setup(servo_pin1, GPIO.OUT)
-    GPIO.setup(servo_pin2, GPIO.OUT)
-    pwm1 = GPIO.PWM(servo_pin1, 50)
-    pwm2 = GPIO.PWM(servo_pin2, 50)
-    pwm1.start(8)
-    pwm2.start(8)
-    duty1 = (angle + 90) / 18 + 2
-    duty2 = (90 - angle) / 18 + 2
-    pwm1.ChangeDutyCycle(duty1)
-    pwm2.ChangeDutyCycle(duty2)
-    time.sleep(0.1)
-    pwm1.stop()
-    pwm2.stop()
-
-def posUp(servo_pin2, servo_pin1, servo_pin5, servo_pin4, direction=1):
-    n1 = -70
-    n2 = 40
-    while True:
-        set_angle_two_servo(n1, servo_pin2, servo_pin1)
-        set_angle_two_servo(n2, servo_pin5, servo_pin4)
+    # Gradually move servos back to initial position
+    while n1_current < n1_target or n2_current > n2_target:
+        if n1_current < n1_target:
+            n1_current += 1
+        if n2_current > n2_target:
+            n2_current -= 1
         
-        n1 += 3 * direction
-        n2 -= 1 * direction
+        set_angle_two_servo(n1_current, servo_pin2, servo_pin1)
+        set_angle_two_servo(n2_current, servo_pin5, servo_pin4)
         time.sleep(0.05)
-        
-        if (direction == 1 and (n1 >= 45 or n2 <= -15)) or (direction == -1 and (n1 <= -70 or n2 >= 40)):
-            break
-
-def posMd(servo_pin2, servo_pin1, servo_pin5, servo_pin4, direction=1):
-    n1 = -70
-    n2 = 40
-    while True:
-        set_angle_two_servo(n1, servo_pin2, servo_pin1)
-        set_angle_two_servo(n2, servo_pin5, servo_pin4)
-        
-        n1 += 3 * direction
-        n2 -= 2 * direction
-        time.sleep(0.05)
-        
-        if (direction == 1 and (n1 >= 45 or n2 <= -45)) or (direction == -1 and (n1 <= -70 or n2 >= 40)):
-            break
-
-def posBt(servo_pin2, servo_pin1, servo_pin5, servo_pin4, direction=1):
-    n1 = -70
-    n2 = 40
-    while True:
-        set_angle_two_servo(n2, servo_pin5, servo_pin4)
-        set_angle_two_servo(n1, servo_pin2, servo_pin1)
-        n1 += 3 * direction
-        n2 -= 2 * direction
-        time.sleep(0.05)
-        
-        if (direction == 1 and (n1 >= 45 or n2 <= -70)) or (direction == -1 and (n1 <= -70 or n2 >= 40)):
-            break
