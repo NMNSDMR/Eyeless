@@ -1,13 +1,3 @@
-def posUp(servo_pin2, servo_pin1, servo_pin5, servo_pin4, direction=1):
-    n1 = -70
-    n2 = 40
-    while True:
-        set_angle_two_servo(n1, servo_pin2, servo_pin1)
-        set_angle_two_servo(n2, servo_pin5, servo_pin4)
-        
-        n1 += 3 * direction
-        n2 -= 1 * direction
-        time.sleep(0.05)
-        
-        if (direction == 1 and (n1 >= 45 or n2 <= -15)) or (direction == -1 and (n1 <= -70 or n2 >= 40)):
-            break
+move3(0, in1, in2, en_a)
+        posZero(servo_pin2, servo_pin1, servo_pin5, servo_pin4)
+        time.sleep(3)
