@@ -1,6 +1,13 @@
 import time
 import RPi.GPIO as GPIO
 
+# Задайте пины для управления сервоприводами
+servo_pin1 = 1
+servo_pin2 = 2
+servo_pin3 = 3
+servo_pin4 = 4
+servo_pin5 = 5
+
 def set_angle(angle, servo_pin):
     GPIO.setup(servo_pin, GPIO.OUT)
     pwm = GPIO.PWM(servo_pin, 50)
@@ -26,8 +33,34 @@ def set_angle_two_servo(angle, servo_pin1, servo_pin2):
     pwm1.stop()
     pwm2.stop()
 
+def move_to_cubes_and_grab():
+    # Двигаться к кубикам
+    move_servos_smoothly(servo_pin2, servo_pin1, -70, -70, 0, 0, 0.05)
+    time.sleep(1)
+
+    # Брать кубики
+    set_angle_two_servo(-30, servo_pin2, servo_pin1)
+    set_angle_two_servo(40, servo_pin5, servo_pin4)
+    time.sleep(1)
+
+def return_to_initial_position():
+    # Вернуться в исходное положение
+    move_servos_smoothly(servo_pin2, servo_pin1, 0, 0, -70, -70, 0.05)
+    time.sleep(1)
+
+def move_to_box_and_release():
+    # Двигаться к коробке
+    move_servos_smoothly(servo_pin2, servo_pin1, -70, -70, 45, 45, 0.05)
+    time.sleep(1)
+
+    # Кинуть кубики в коробку
+    set_angle_two_servo(0, servo_pin2, servo_pin1)  # Вернуться в исходное положение
+    set_angle(-15, servo_pin3)  # Поднять руку
+    time.sleep(1)
+    set_angle(0, servo_pin3)  # Вернуть руку в исходное положение
+
 def move_servos_smoothly(servo_pin1, servo_pin2, start_angle1, start_angle2, end_angle1, end_angle2, step_delay):
-    steps = 10  # Number of steps for smooth movement
+    steps = 10  # Количество шагов для плавного движения
     angle_step1 = (end_angle1 - start_angle1) / steps
     angle_step2 = (end_angle2 - start_angle2) / steps
     for _ in range(steps):
@@ -36,32 +69,7 @@ def move_servos_smoothly(servo_pin1, servo_pin2, start_angle1, start_angle2, end
         set_angle_two_servo(start_angle1, servo_pin1, servo_pin2)
         time.sleep(step_delay)
 
-def grab_and_release(servo_pin1, servo_pin2, servo_pin3, servo_pin4, servo_pin5):
-    # Захватить груз
-    set_angle_two_servo(-30, servo_pin2, servo_pin1)  # Нижняя часть
-    set_angle_two_servo(40, servo_pin5, servo_pin4)  # Верхняя часть
-    time.sleep(1)
-
-    # Отодвинуться назад
-    move_servos_smoothly(servo_pin2, servo_pin1, -30, -30, -70, -70, 0.05)
-    time.sleep(1)
-
-    # Вернуться в начальное положение
-    move_servos_smoothly(servo_pin2, servo_pin1, -70, -70, 45, 45, 0.05)
-    time.sleep(1)
-
-    # Двигаться, чтобы выбросить груз
-    set_angle_two_servo(0, servo_pin2, servo_pin1)  # Вернуться в исходное положение
-    set_angle(-15, servo_pin3)  # Поднять руку
-    time.sleep(1)
-    set_angle(0, servo_pin3)  # Вернуть руку в исходное положение
-
-# Задайте пины для вашего управления
-servo_pin1 = 1
-servo_pin2 = 2
-servo_pin3 = 3
-servo_pin4 = 4
-servo_pin5 = 5
-
-# Вызов функции для захвата и выпуска груза
-grab_and_release(servo_pin1, servo_pin2, servo_pin3, servo_pin4, servo_pin5)
+# Вызов функций для движения руки
+move_to_cubes_and_grab()
+return_to_initial_position()
+move_to_box_and_release()
