@@ -1,75 +1,16 @@
-import time
-import RPi.GPIO as GPIO
-
-# Задайте пины для управления сервоприводами
-servo_pin1 = 1
-servo_pin2 = 2
-servo_pin3 = 3
-servo_pin4 = 4
-servo_pin5 = 5
-
-def set_angle(angle, servo_pin):
-    GPIO.setup(servo_pin, GPIO.OUT)
-    pwm = GPIO.PWM(servo_pin, 50)
-    pwm.start(8)
-    duty = (angle + 90) / 18 + 2
-    pwm.ChangeDutyCycle(duty)
-    time.sleep(0.1)
-    pwm.stop()
-
-def set_angle_two_servo(angle, servo_pin1, servo_pin2):
-    GPIO.setup(servo_pin1, GPIO.OUT)
-    GPIO.setup(servo_pin2, GPIO.OUT)
-    pwm1 = GPIO.PWM(servo_pin1, 50)
-    pwm2 = GPIO.PWM(servo_pin2, 50)
-    pwm1.start(2)
-    pwm2.start(2)
-    duty1 = (angle + 90) / 18 + 2
-    duty2 = (90 - angle) / 18 + 2
-    
-    pwm1.ChangeDutyCycle(duty1)
-    pwm2.ChangeDutyCycle(duty2)
-    time.sleep(0.1)
-    pwm1.stop()
-    pwm2.stop()
-
-def move_to_cubes_and_grab():
-    # Двигаться к кубикам
-    move_servos_smoothly(servo_pin2, servo_pin1, -70, -70, 0, 0, 0.05)
-    time.sleep(1)
-
-    # Брать кубики
-    set_angle_two_servo(-30, servo_pin2, servo_pin1)
-    set_angle_two_servo(40, servo_pin5, servo_pin4)
-    time.sleep(1)
-
-def return_to_initial_position():
-    # Вернуться в исходное положение
-    move_servos_smoothly(servo_pin2, servo_pin1, 0, 0, -70, -70, 0.05)
-    time.sleep(1)
-
-def move_to_box_and_release():
-    # Двигаться к коробке
-    move_servos_smoothly(servo_pin2, servo_pin1, -70, -70, 45, 45, 0.05)
-    time.sleep(1)
-
-    # Кинуть кубики в коробку
-    set_angle_two_servo(0, servo_pin2, servo_pin1)  # Вернуться в исходное положение
-    set_angle(-15, servo_pin3)  # Поднять руку
-    time.sleep(1)
-    set_angle(0, servo_pin3)  # Вернуть руку в исходное положение
-
-def move_servos_smoothly(servo_pin1, servo_pin2, start_angle1, start_angle2, end_angle1, end_angle2, step_delay):
-    steps = 10  # Количество шагов для плавного движения
-    angle_step1 = (end_angle1 - start_angle1) / steps
-    angle_step2 = (end_angle2 - start_angle2) / steps
-    for _ in range(steps):
-        start_angle1 += angle_step1
-        start_angle2 += angle_step2
-        set_angle_two_servo(start_angle1, servo_pin1, servo_pin2)
-        time.sleep(step_delay)
-
-# Вызов функций для движения руки
-move_to_cubes_and_grab()
-return_to_initial_position()
-move_to_box_and_release()
+def clech(active, servo_pin):
+    if (active):
+        GPIO.setup(servo_pin, GPIO.OUT)
+        pwm = GPIO.PWM(servo_pin, 50)
+        pwm.start(8)
+        duty = (30+90)/18+2  # Увеличиваем угол для захвата
+        pwm.ChangeDutyCycle(duty)
+        time.sleep(0.1)  # Добавляем небольшую задержку
+    else:
+        GPIO.setup(servo_pin, GPIO.OUT)
+        pwm = GPIO.PWM(servo_pin, 50)
+        pwm.start(8)
+        duty = (0+90)/18+2  # Уменьшаем угол для отпускания
+        pwm.ChangeDutyCycle(duty)
+        time.sleep(0.1)
+        pwm.stop()
