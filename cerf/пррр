@@ -36,43 +36,32 @@ def move_servos_smoothly(servo_pin1, servo_pin2, start_angle1, start_angle2, end
         set_angle_two_servo(start_angle1, servo_pin1, servo_pin2)
         time.sleep(step_delay)
 
-def posUp(servo_pin2, servo_pin1, servo_pin5, servo_pin4, servo_pin3):
-    move_servos_smoothly(servo_pin2, servo_pin1, -65, -65, 40, 40, 0.05)
+def grab_and_release(servo_pin1, servo_pin2, servo_pin3, servo_pin4, servo_pin5):
+    # Захватить груз
+    set_angle_two_servo(-30, servo_pin2, servo_pin1)  # Нижняя часть
+    set_angle_two_servo(40, servo_pin5, servo_pin4)  # Верхняя часть
     time.sleep(1)
-    set_angle(-15, servo_pin3)
-    time.sleep(1)
-    move_servos_smoothly(servo_pin2, servo_pin1, 45, 45, -65, -65, 0.05)
 
-def posMd(servo_pin2, servo_pin1, servo_pin5, servo_pin4, servo_pin3):
-    move_servos_smoothly(servo_pin2, servo_pin1, -70, -70, 40, 40, 0.05)
+    # Отодвинуться назад
+    move_servos_smoothly(servo_pin2, servo_pin1, -30, -30, -70, -70, 0.05)
     time.sleep(1)
-    set_angle(0, servo_pin3)
-    time.sleep(1)
-    move_servos_smoothly(servo_pin2, servo_pin1, 45, 45, -70, -70, 0.05)
 
-def posBt(servo_pin2, servo_pin1, servo_pin5, servo_pin4, servo_pin3):
-    move_servos_smoothly(servo_pin2, servo_pin1, -65, -65, 40, 40, 0.05)
+    # Вернуться в начальное положение
+    move_servos_smoothly(servo_pin2, servo_pin1, -70, -70, 45, 45, 0.05)
     time.sleep(1)
-    set_angle(0, servo_pin3)
+
+    # Двигаться, чтобы выбросить груз
+    set_angle_two_servo(0, servo_pin2, servo_pin1)  # Вернуться в исходное положение
+    set_angle(-15, servo_pin3)  # Поднять руку
     time.sleep(1)
-    move_servos_smoothly(servo_pin2, servo_pin1, 45, 45, -65, -65, 0.05)
+    set_angle(0, servo_pin3)  # Вернуть руку в исходное положение
 
-def posZero(servo_pin2, servo_pin1, servo_pin5, servo_pin4):
-    set_angle_two_servo(-70, servo_pin2, servo_pin1)
-    set_angle_two_servo(40, servo_pin5, servo_pin4)
+# Задайте пины для вашего управления
+servo_pin1 = 1
+servo_pin2 = 2
+servo_pin3 = 3
+servo_pin4 = 4
+servo_pin5 = 5
 
-def clech(active, servo_pin):
-    if active:
-        GPIO.setup(servo_pin, GPIO.OUT)
-        pwm = GPIO.PWM(servo_pin, 50)
-        pwm.start(8)
-        duty = (23 + 90) / 18 + 2
-        pwm.ChangeDutyCycle(duty)
-    else:
-        GPIO.setup(servo_pin, GPIO.OUT)
-        pwm = GPIO.PWM(servo_pin, 50)
-        pwm.start(8)
-        duty = (0 + 90) / 18 + 2
-        pwm.ChangeDutyCycle(duty)
-        time.sleep(0.1)
-        pwm.stop()
+# Вызов функции для захвата и выпуска груза
+grab_and_release(servo_pin1, servo_pin2, servo_pin3, servo_pin4, servo_pin5)
