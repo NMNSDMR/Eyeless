@@ -1,0 +1,34 @@
+a = []
+for line in range(int(input())):
+    a.append(int(input()))
+
+try:
+    for i in range(len(a)):
+        if a[i]>a[i+1]:
+            if i % 2 == 0 and i != len(a):
+                if a[i]>a[i+1]:
+                    m = 0 
+                else:
+                    print('Not SawMassive')
+                    break
+            if i % 2 == 1 and i != len(a):
+                if a[i+1]<a[i+2]:
+                     m = 0
+                else:
+                    print('Not SawMassive')
+                    break
+        else:
+            if i % 2 == 0 and i != len(a):
+                if a[i]<a[i+1]:
+                    m = 0 
+                else:
+                    print('Not SawMassive')
+                    break
+            if i % 2 == 1 and i != len(a):
+                if a[i+1]>a[i+2]:
+                     m = 0
+                else:
+                    print('Not sawMassive')
+                    break
+except:
+    print('SawMassive')
