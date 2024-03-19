@@ -1,5 +1,11 @@
 1.
-"Код"
+for i in range(1000000):
+    s = bin(i)[2::]
+    s += str(s.count(’1’) % 2)
+    s += str(s.count(’1’) % 2)
+    if int(s, 2) > 100:
+        print(int(s, 2))
+        break
 2.
 "Код"
 3.
