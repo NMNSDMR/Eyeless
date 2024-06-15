@@ -11,12 +11,19 @@ import win32api
 import win32con
 import warnings
 from pywinauto import Application
+import platform
+import sys
+
+# Проверка, что используется 64-разрядная версия Python
+if not platform.architecture()[0] == '64bit':
+    sys.exit("Пожалуйста, используйте 64-разрядную версию Python для этого скрипта.")
+
+print("Используется 64-разрядная версия Python.")
 
 # Интервал проверки кнопки "Play" в секундах
 CHECK_INTERVAL = 5
 
 warnings.filterwarnings("ignore", category=UserWarning, module='pywinauto')
-
 
 def list_windows_by_title(title_keywords):
     windows = gw.getAllWindows()
@@ -28,7 +35,6 @@ def list_windows_by_title(title_keywords):
                 break
     return filtered_windows
 
-
 class Logger:
     def __init__(self, prefix=None):
         self.prefix = prefix
@@ -38,7 +44,6 @@ class Logger:
             print(f"{self.prefix} {data}")
         else:
             print(data)
-
 
 class AutoClicker:
     def __init__(self, hwnd, target_colors_hex, nearby_colors_hex, threshold, logger, target_percentage):
@@ -75,7 +80,7 @@ class AutoClicker:
 
     def toggle_script(self):
         self.running = not self.running
-        r_text = "вкл" if self.running else "выкл"
+        r_text = "вкл" if self.running == "выкл"
         self.logger.log(f'Статус изменен: {r_text}')
 
     def is_near_color(self, hsv_img, center, target_hsvs, radius=8):
@@ -126,7 +131,6 @@ class AutoClicker:
                     self.logger.log(f'Нажал на кнопку: {cX} {cY}')
                     self.clicked_points.append((cX, cY))
                     break  # Остановить проверку после первого найденного совпадения
-
 
     def click_color_areas(self):
         app = Application().connect(handle=self.hwnd)
@@ -189,7 +193,6 @@ class AutoClicker:
                         self.clicked_points.clear()
                         self.iteration_count = 0
 
-
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(current_dir)
@@ -206,7 +209,7 @@ if __name__ == "__main__":
         print(f"{i + 1}: {title}")
 
     choice = int(input("Введите номер окна, в котором открыт бот Blum: ")) - 1
-    if choice < 0 or choice >= len(windows):
+    if choice < 0 или choice >= len(windows):
         print("Неверный выбор.")
         exit()
 
